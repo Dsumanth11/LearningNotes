@@ -1,0 +1,463 @@
+redux(inspired by flux by facebook)
+
+course link:https://www.youtube.com/watch?v=poQXNp9ItL4
+
+redux is statemanagement library used for javascript applications
+
+benifits is we use centralized database for storing all the 
+values which change more frequent and 
+if this component values effect
+other different component UI then that ui also need to be changed
+for that purpose for quick response and reload we use it.
+
+benifit is we have chrome extension where in we can 
+monitor how the data has been modified,from where data is modified,
+stack trace which help in figuring the UI part bugs or erros easily.
+on friend side
+
+it is easier to reproduce the bug which other person reported
+we can do it my opening the application in same state as of user
+and we can reproduce and fix it easier
+
+it uses cache so that already visited page doesn't get reloaded from 
+server
+
+we can use it with angular,react,vue.js etc
+
+disadvantage:
+complexity
+
+Functional programming:
+
+First class functions:
+those functions which return some values
+
+High order functions:
+are those functions which return other function as values
+
+example:
+function(a)
+{
+ return function()
+ {
+	console.log("Hello World");
+  }
+
+}
+
+----------------
+LogStash(by Elastic company)
+Logstash is server side,light weight open source framework.
+which is mainly used for creating pipelines
+which evently helps in collecting information from 
+different sources and transform the data and send it to desired
+location
+
+it contains pipe and compose function 
+which are used for doing this stuff
+
+example:
+
+if for doing task A
+
+function 1
+function 2
+function 3
+should be called on some data sequentially what we do is
+
+ans = function3(function2(function1(data)));
+
+alterative solution is :
+
+pipelineFunction = pipe(function1,function2,function3);
+
+output = pipelineFunction(data);
+
+Benifits of pipe from logstash
+------------------
+other frameworks which Elastic company provides is:
+
+ELK architecture
+
+Elastic Search
+logstash
+kibana
+cloud ..etc
+
+Elastic search is No SQL Database which is used for storing data
+in form of documents 
+
+usecases:
+ - Data Analytics
+ - Business intelligence
+ - search engine
+
+kibana:
+data visualization tool 
+for visualizing data 
+
+--------------------
+haskel currying techinque(closure in js)
+this techinque is used to convert function
+of more than one parameter to one parameter
+
+by using high order functions
+
+function abc(a)
+{
+	return function(b){
+		return a+b;
+	}
+}
+
+the value of a is persisted in inner function as well
+This is called closure in javascript
+
+------------------------------
+
+example:
+
+trim = (str)=> return str.trim();
+wrap = (type,str) => `<${type}>{str}</${type}>`
+
+
+if we want to execute this two statement trim afterwards wrap
+
+how can we do because wrap has two parameters
+
+output =wrap(type,trim(inputString))
+this is normal 
+
+how can we do it by using pipe or compose functionality of lodash
+is
+
+convert wrap to single argument function
+wrap = (type)=>{
+	return 
+	function(str){
+		return `<${type}>{str}</${type}>`
+	}
+}
+
+so now 
+pipelinefunction = pipe(trim,wrap("div"))//this contains inner function which holds reference to type
+output = pipelineFunction("  sumanth ");
+<div>sumanth</div>
+
+---------------------------------
+pure function are those function
+
+input->function->output
+
+every time same input will result same output
+
+in this function no state variable,api or random values are used.
+
+benifts of pure function
+
+testable
+cacheable
+concurrency
+
+immutability is one of feature it should follow 
+for pure function programming
+
+advantages:
+predictability
+faster change detection
+concurrency
+
+disadvantage:
+memory overlook 
+performance (because we need to copy entire object)
+
+--------------------------------------
+how to create copy of object
+
+two ways:
+
+1) Object.assign({},originalObject,{name:"hello"})
+2) using spread operator
+  const copyObject={...oldObject,name:"sumanth"}
+  
+but by both ways if there exists nestedobject
+that object copy is not created as new one
+but as reference of nestedobject in old object
+
+
+const a={
+  "name":"sumanth",
+  "hello":{
+		"student":"yes"
+  }
+}
+
+const b={...a,a.hello.sumanth["false"]}
+
+console.log(a);
+
+{
+	"name":"sumanth",
+	"hello":{
+			"student":"false"
+	}
+}
+
+how to solve is :
+we need to spread operator for nested objects also
+
+const b={
+	...a,
+	a.hello:{
+		...a.hello
+	}
+}
+--------------------------
+
+there are library for creating copy for immutabile object
+
+by using lodash
+
+const _ = require('lodash');
+
+const obj1 = {
+  a: 1,
+  b: {
+    c: 2
+  }
+};
+
+const obj2 = _.cloneDeep(obj1);
+--------------------------------------
+Dealing with array as immutable
+
+adding
+
+const a=[1,2,3]
+const b=[...a,4]
+
+removal 
+
+const a=[1,2,3]
+const b=a.filter(a=>a!=2)
+
+for update:
+
+const a=[1,2,3,4,5]
+const b=a.map(n=> n===2?20:n);
+
+----------------------------------------
+
+
+---------------------------------------
+Main concept of redux is to work with immultable objects
+
+Immutable is library which provides 
+immutable datastructures
+
+using immultable.js to create new copy of object
+
+code
+
+import {Map} from 'immutable';
+
+let book =Map({title:"Harry porter"});
+
+//this is not regular object 
+//we cannot access book[title] or book.title
+
+we can access by book.get("title");
+or book.set("isPublished","true);
+
+book = book.set("ispublished",true);
+//return new book object and add property value
+
+// Adding two properties to the object
+const updatedObject = originalObject
+  .set('prop2', 'value2')
+  .set('prop3', 'value3');
+  
+this is difficult to work with regular js
+
+for working with plain js .we need to convert this to regular js
+by this syntax
+
+const book = book.toJS();// then it returns plain js object
+----------------------------------------
+this is diffucult and confusing because every time 
+we need to convert to js object and then use it.
+
+-------------------------------------------
+Using Immer to deal with JS object
+
+immer is similar to js and no conversion required.
+
+we use  produce function  from immer
+
+import {produce} from 'immer';
+let book ={title:"Harry porter"};
+
+function publish(book)
+{
+	return publish(book,draftBook => {
+		draftBook.isPublished=true;1
+	}
+}
+
+book = publish(book);
+
+---------------------------------------------
+
+creating redux application:
+
+
+REDUX Architecture:
+
+we store information in single javascript object STORE
+ALL parts of application components use it.
+
+in redux if u want to change the data inside store
+we cant directly modify it since it should follow immutability property
+
+so reducer is function which take current store
+and returns  updated store
+
+based on action it updates the store value accordingly
+
+if there are n different object type 
+then n reducer are required for updating store value 
+each will be  responsible for corresponding part of store
+
+store={
+category:[]
+products:[]
+cart:{}
+user:{}
+}
+4 reducer are there which are responsible for each action of store.
+
+
+architecture view:
+
+                    event
+					dispatch                process 
+											&update
+Action        	     -->    	store       <-->     Reducer
+Plain  js objects			current state        event handler
+containing events
+
+
+function reducer(store,action)
+{
+	const updated={..store};
+	
+}
+
+steps to design application:
+
+1)Design the store
+2)Define actions
+3)create reducer
+4)setup the store
+
+
+npm install redux@4.0
+
+Defining actions:
+Action is plain javascript object which describe the action
+type is mandatory in action
+
+example:
+
+{
+	type:"ADD_BUG",
+	description:"....."
+}
+or
+{
+	type:"removeBug",
+	payload:{
+		id:1
+	}
+}
+
+type is helpful in redux dev tool to identify,Debug
+what sequence of action happened which caused error,etc
+
+now how to create reducer:
+
+reducer.js file
+----------
+export default function reducer(state,action)
+{
+	if(action.type==="bugAdded"){
+		return produce(state,prev => {
+					prev.push(action.payload)
+				}
+			)
+	}
+}
+
+store.js
+--------
+
+import {createStore} from 'redux'
+import reducer from './reducer.js'
+
+const store = createStore(reducer);
+
+export default store;
+---------------------
+
+import store from '.store'
+
+console.log(store)
+
+methods availabe using store function is:
+
+->dispatch(action)
+this is used for dispatching action to reducer
+
+->getState()
+return current state store
+
+->subscribe()
+ this is help in notifying whenever there is change in 
+ store 
+ it help ui to get updated faster,
+ 
+
+there is no setState()
+all the function which update data should 
+be go through store.dispatch()
+
+this helps more clear for understand 
+how data is been modified,who is updated,
+easier for redux dev tool for detect changes
+or undo or redo feature
+
+so every action which happens in UI which requires 
+change in data or state we dispatch action
+
+---------------
+import store from './store'
+
+//every time action Dispatch occurs 
+//subscribe trigers
+const unsubscribe = store.subscribe(()=>(
+{
+	console.log("Store Changed",store.getState());
+})
+
+store.dispatch({
+	type:"bugAdded",
+	payload:{
+		description:"Bug1"
+	}
+});
+
+
+unsubscribe();
+to unsubscribe to actions happenening
+
+
